@@ -2,8 +2,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BotMessage } from '../components/BotMessage'; // We will create this
-import { EmptyChatView } from '../components/EmptyChatView'; // We will create this
+import TextareaAutosize from 'react-textarea-autosize';
+import { BotMessage } from '../components/BotMessage';
+import { EmptyChatView } from '../components/EmptyChatView';
+
+// --- ICONS & INDICATORS ---
 
 // A simple send icon
 const SendIcon = ({ className }) => (
@@ -38,6 +41,8 @@ const LoadingIndicator = () => (
   </motion.div>
 );
 
+// --- MAIN PAGE COMPONENT ---
+
 function LegalAdvisorPage() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -50,17 +55,15 @@ function LegalAdvisorPage() {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!input.trim()) return;
+  // --- NEW: Helper function to handle sending any query ---
+  const sendQuery = (query) => {
+    if (!query.trim()) return;
 
-    const userMessage = { sender: 'user', text: input };
+    const userMessage = { sender: 'user', text: query };
     setMessages((prev) => [...prev, userMessage]);
-    setInput('');
     setIsLoading(true);
 
     // --- FAKE BACKEND CALL ---
-    // This simulates your model thinking, then sending a response
     setTimeout(() => {
       const botResponse = {
         sender: 'bot',
@@ -71,25 +74,48 @@ function LegalAdvisorPage() {
     }, 2500);
     // -------------------------
   };
+  
+  // --- UPDATED: handleSubmit now uses the helper ---
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    sendQuery(input);
+    setInput('');
+  };
+
+  // --- NEW: Handler for clickable prompts ---
+  const handlePromptClick = (prompt) => {
+    setInput(prompt); // Set input for visual feedback (optional)
+    sendQuery(prompt); // Send the query
+    setInput(''); // Clear input after sending
+  };
 
   const inputVariants = {
-    idle: { width: '80%' },
+    idle: { width: '75%' },
     focused: { width: '90%' },
   };
 
   return (
-    <div className="flex-grow flex flex-col h-[85vh] max-h-[85vh]">
+    // Your layout: 'flex-grow items-center flex flex-col'
+    <div className="flex-grow items-center flex flex-col">
+      
       {/* 1. CHAT MESSAGE AREA */}
-      <div className="flex-grow overflow-y-auto p-6 space-y-4">
+      <div className="flex-grow overflow-y-auto p-6 space-y-4 custom-scrollbar">
         {messages.length === 0 ? (
-          <EmptyChatView />
+          // --- UPDATED: Pass the handler to EmptyChatView ---
+          <EmptyChatView onPromptClick={handlePromptClick} />
         ) : (
           messages.map((msg, index) => (
             <div key={index} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
               {msg.sender === 'user' ? (
-                <div className="bg-active text-white p-3 rounded-lg max-w-lg shadow-soft">
+                // --- UPDATED: Added motion.div for scale-in animation ---
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                  className="bg-active text-white p-3 rounded-lg max-w-lg shadow-soft"
+                >
                   {msg.text}
-                </div>
+                </motion.div>
               ) : (
                 <BotMessage text={msg.text} />
               )}
@@ -105,7 +131,8 @@ function LegalAdvisorPage() {
       </div>
 
       {/* 2. INPUT AREA */}
-      <div className="w-full flex flex-col items-center p-4">
+      {/* Your layout: 'w-3/5' */}
+      <div className="w-3/5 flex flex-col items-center p-4">
         <motion.form
           onSubmit={handleSubmit}
           className="flex items-center p-3 bg-surface rounded-xl border border-border shadow-soft"
@@ -113,9 +140,10 @@ function LegalAdvisorPage() {
           animate={isFocused ? 'focused' : 'idle'}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         >
-          <textarea
-            rows="1"
-            className="flex-grow bg-transparent text-text placeholder-subtext outline-none resize-none mx-2"
+          <TextareaAutosize
+            minRows={1}
+            maxRows={6}
+            className="flex-grow bg-transparent text-text placeholder-subtext outline-none resize-none mx-2 custom-scrollbar"
             placeholder="Ask me any legal question..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
