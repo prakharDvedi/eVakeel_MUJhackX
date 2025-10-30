@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@theme {
+    /* Core brand colors */
+    --color-primary: #1A3C8B;   /* Deep Court Blue - trust & authority */
+    --color-secondary: #0D1522; /* Dark Navy Background */
+    
+    /* Text colors */
+    --color-text: #F2F3F5;      /* Soft white text for dark backgrounds */
+    --color-subtext: #A0A4AC;   /* Muted gray for secondary text */
+    
+    /* UI Elements */
+    --color-surface: #121821;   /* Panel / Card background */
+    --color-border: #2A2F38;    /* Subtle border lines */
+    --color-hover: #243B70;     /* Slightly lighter blue for hover states */
+    --color-active: #2E5AD6;    /* Button active / link highlight */
+    
+    /* Accent and utility colors */
+    --color-success: #00A36C;   /* Subtle green for positive states */
+    --color-error: #B3261E;     /* Deep red for alerts or warnings */
+    --color-warning: #E5A700;   /* Soft yellow for notices */
+    
+    /* Shadows & overlays */
+    --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.3);
+    --overlay-dark: rgba(0, 0, 0, 0.6);
+
+    /* Font setup */
+    --font-primary: 'Inter', 'Poppins', sans-serif;
+    --font-size-base: 16px;
+}
