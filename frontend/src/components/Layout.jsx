@@ -26,9 +26,10 @@ function Layout() {
           scale: [1, 1.03, 1]   // Pulse scale up and down
         }}
         transition={{
-          opacity: { duration: 1.5, delay: 0.5, ease: "easeOut" },
+          opacity: { duration: 1, delay: 0.5, ease: "easeOut" },
           y: { duration: 12, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" },
           scale: { duration: 12, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }
+          
         }}
         className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden"
       >
