@@ -4,6 +4,9 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout.jsx';
 import HomePage from './pages/HomePage.jsx';
+import AboutPage from './pages/AboutPage.jsx';
+import FeaturesPage from './pages/FeaturesPage.jsx';
+import PricingPage from './pages/PricingPage.jsx';
 import LegalAdvisorPage from './pages/LegalAdvisorPage.jsx';
 import DocumentParserPage from './pages/DocumentParserPage.jsx';
 import LegalScorePage from './pages/LegalScorePage.jsx'; // 1. Import the new page
@@ -25,6 +28,9 @@ function App() {
 
         {/* 2. Add the new route for the score page */}
         <Route path="score" element={<LegalScorePage />} />
+        <Route path="features" element={<FeaturesPage />} />
+        <Route path="pricing" element={<PricingPage />} />
+        <Route path="about" element={<AboutPage />} />
 
         {/* You can add other routes here later (e.g., login, about) */}
 

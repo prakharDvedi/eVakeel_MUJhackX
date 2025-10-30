@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import TextareaAutosize from 'react-textarea-autosize';
-import { BotMessage } from '../components/BotMessage';
+// import { BotMessage } from '../components/BotMessage'; // <-- No longer needed
 import { EmptyChatView } from '../components/EmptyChatView';
 
 // --- ICONS & INDICATORS ---
@@ -15,29 +15,25 @@ const SendIcon = ({ className }) => (
   </svg>
 );
 
-// A simple loading bubble
+// --- UPDATED: LoadingIndicator is now a spinner with your logo ---
 const LoadingIndicator = () => (
   <motion.div
-    className="flex space-x-1 p-4"
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
+    className="flex justify-start p-4" // Aligns to the left like a bot message
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -10 }}
   >
-    <motion.span 
-      className="w-2 h-2 bg-subtext rounded-full"
-      animate={{ y: [0, -4, 0] }}
-      transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}
-    />
-    <motion.span 
-      className="w-2 h-2 bg-subtext rounded-full"
-      animate={{ y: [0, -4, 0] }}
-      transition={{ duration: 0.8, delay: 0.1, repeat: Infinity, ease: "easeInOut" }}
-    />
-    <motion.span 
-      className="w-2 h-2 bg-subtext rounded-full"
-      animate={{ y: [0, -4, 0] }}
-      transition={{ duration: 0.8, delay: 0.2, repeat: Infinity, ease: "easeInOut" }}
-    />
+    <motion.div
+      className="w-8 h-8 p-1" // Container for the spinning logo
+      animate={{ rotate: 360 }}
+      transition={{ 
+        duration: 1.5, 
+        ease: "linear", 
+        repeat: Infinity 
+      }}
+    >
+      <img src="/img2.png" alt="Loading..." className="w-full h-full" />
+    </motion.div>
   </motion.div>
 );
 
@@ -90,16 +86,16 @@ function LegalAdvisorPage() {
   };
 
   const inputVariants = {
-    idle: { width: '75%' },
-    focused: { width: '90%' },
+    idle: { width: '100%' },
+    focused: { width: '100%' },
   };
 
   return (
     // Your layout: 'flex-grow items-center flex flex-col'
     <div className="flex-grow items-center flex flex-col">
-      
+
       {/* 1. CHAT MESSAGE AREA */}
-      <div className="flex-grow overflow-y-auto p-6 space-y-4 custom-scrollbar">
+      <div className="flex-grow overflow-y-auto p-4 sm:p-6 space-y-4 custom-scrollbar w-full max-w-4xl">
         {messages.length === 0 ? (
           // --- UPDATED: Pass the handler to EmptyChatView ---
           <EmptyChatView onPromptClick={handlePromptClick} />
@@ -112,12 +108,20 @@ function LegalAdvisorPage() {
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                  className="bg-active text-white p-3 rounded-lg max-w-lg shadow-soft"
+                  className="bg-active text-white p-3 rounded-lg max-w-xs sm:max-w-md md:max-w-lg shadow-soft break-words"
                 >
-                  {msg.text}
+                  <div className="whitespace-pre-wrap">{msg.text}</div>
                 </motion.div>
               ) : (
-                <BotMessage text={msg.text} />
+                // --- UPDATED: Replaced BotMessage with instant-display div ---
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-surface text-text p-3 rounded-lg max-w-xs sm:max-w-md md:max-w-lg shadow-soft break-words"
+                >
+                  <div className="whitespace-pre-wrap">{msg.text}</div>
+                </motion.div>
               )}
             </div>
           ))
@@ -132,10 +136,10 @@ function LegalAdvisorPage() {
 
       {/* 2. INPUT AREA */}
       {/* Your layout: 'w-3/5' */}
-      <div className="w-3/5 flex flex-col items-center p-4">
+      <div className="w-full max-w-2xl flex flex-col items-center p-4">
         <motion.form
           onSubmit={handleSubmit}
-          className="flex items-center p-3 bg-surface rounded-xl border border-border shadow-soft"
+          className="flex items-center p-3 bg-surface rounded-xl border border-border shadow-soft w-full"
           variants={inputVariants}
           animate={isFocused ? 'focused' : 'idle'}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}

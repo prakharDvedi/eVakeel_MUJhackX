@@ -29,7 +29,7 @@ export const BotMessage = ({ text }) => {
 
   return (
     <motion.div
-      className="bg-surface text-text p-3 rounded-lg max-w-lg shadow-soft"
+      className="bg-surface text-text p-3 rounded-lg max-w-xs sm:max-w-md md:max-w-lg shadow-soft break-words"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
