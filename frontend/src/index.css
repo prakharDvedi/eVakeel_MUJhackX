@@ -74,16 +74,31 @@ body::-webkit-scrollbar {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: var(--color-active); /* Brightens on hover */
 }
-/* File: frontend/src/index.css */
-/* ... (keep all your other styles above) ... */
 
-/* --- Text Gradient Utility --- */
+/* --- Keyframes for the gradient animation --- */
+@keyframes gradient-flow {
+  0% { background-position: 0% center; }
+  50% { background-position: 200% center; }
+  100% { background-position: 0% center; }
+}
+
+/* --- Animated Text Gradient Utility --- */
 .text-gradient-primary {
-  background: linear-gradient(to right, var(--color-text), var(--color-active));
+  /* We add 'active' to both ends for a seamless loop */
+  background: linear-gradient(
+    to right, 
+    var(--color-active), 
+    var(--color-text), 
+    var(--color-active)
+  );
+  background-size: 200% auto; /* Make bg larger than text */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-fill-color: transparent;
+  
+  /* Apply the animation */
+  animation: gradient-flow 8s ease-in-out infinite;
 }
 
 /* --- Card Shine Effect --- */
