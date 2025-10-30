@@ -29,6 +29,7 @@ function Layout() {
           opacity: { duration: 1, delay: 0.5, ease: "easeOut" },
           y: { duration: 12, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" },
           scale: { duration: 12, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }
+          
         }}
         className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden"
       >
