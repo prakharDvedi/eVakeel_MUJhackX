@@ -4,18 +4,27 @@ const admin = require('firebase-admin');
 
 module.exports = fp(async function (fastify, opts) {
     if (!admin.apps.length) {
-        if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
-            const svc = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+        try {
+            let credential;
+            if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
+                const svc = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+                credential = admin.credential.cert(svc);
+            } else if (process.env.FIREBASE_SERVICE_ACCOUNT_BASE64) {
+                const decoded = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64, 'base64').toString('utf8');
+                const svc = JSON.parse(decoded);
+                credential = admin.credential.cert(svc);
+            } else {
+                // when GOOGLE_APPLICATION_CREDENTIALS env var is present, applicationDefault() will use it
+                credential = admin.credential.applicationDefault();
+            }
+
             admin.initializeApp({
-                credential: admin.credential.cert(svc),
+                credential,
                 storageBucket: process.env.FIREBASE_STORAGE_BUCKET || undefined,
             });
-        } else {
-            // when GOOGLE_APPLICATION_CREDENTIALS env var is present, applicationDefault() will use it
-            admin.initializeApp({
-                credential: admin.credential.applicationDefault(),
-                storageBucket: process.env.FIREBASE_STORAGE_BUCKET || undefined,
-            });
+        } catch (err) {
+            fastify.log.error(err, 'Failed to initialize Firebase Admin. Ensure credentials are configured.');
+            throw err;
         }
     }
 

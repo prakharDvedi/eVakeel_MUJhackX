@@ -119,28 +119,28 @@ function DocumentParserPage() {
   };
 
   return (
-    <div className="flex-grow flex flex-col items-center justify-start text-text p-6 pt-16">
-      
+    <div className="flex-grow flex flex-col items-center justify-start text-text p-4 sm:p-6 pt-8 sm:pt-16">
+
       {/* --- Page Title --- */}
-      <motion.h1 
+      <motion.h1
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-        className="text-4xl font-bold mb-4"
+        className="text-3xl sm:text-4xl font-bold mb-4 text-center"
       >
         Document Parser
       </motion.h1>
-      <motion.p 
+      <motion.p
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
-        className="text-lg text-subtext mb-8 max-w-lg text-center"
+        className="text-base sm:text-lg text-subtext mb-6 sm:mb-8 max-w-lg text-center px-4"
       >
         Upload your legal document (PDF or image). The AI will analyze the text and provide a simplified summary.
       </motion.p>
 
       {/* --- Main Uploader Area --- */}
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-2xl px-4 sm:px-0">
         <AnimatePresence mode="wait">
           {!selectedFile ? (
             
@@ -154,7 +154,7 @@ function DocumentParserPage() {
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
-              className={`flex flex-col items-center justify-center w-full h-64 bg-surface border-2 border-dashed rounded-xl transition-colors
+              className={`flex flex-col items-center justify-center w-full h-48 sm:h-64 bg-surface border-2 border-dashed rounded-xl transition-colors
                           ${isDragOver ? 'border-active' : 'border-border'}`}
             >
               <input
@@ -183,24 +183,24 @@ function DocumentParserPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="bg-surface border border-border rounded-xl p-6 flex items-center justify-between shadow-soft"
+              className="bg-surface border border-border rounded-xl p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between shadow-soft gap-4 sm:gap-0"
             >
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 sm:gap-4 flex-1">
                 {selectedFile.type === 'application/pdf' ? (
-                  <PdfIcon className="w-10 h-10 text-error" />
+                  <PdfIcon className="w-8 h-8 sm:w-10 sm:h-10 text-error flex-shrink-0" />
                 ) : (
-                  <ImageIcon className="w-10 h-10 text-active" />
+                  <ImageIcon className="w-8 h-8 sm:w-10 sm:h-10 text-active flex-shrink-0" />
                 )}
-                <div className="flex flex-col overflow-hidden">
-                  <span className="text-text font-medium truncate">{selectedFile.name}</span>
-                  <span className="text-subtext text-sm">{(selectedFile.size / 1024).toFixed(1)} KB</span>
+                <div className="flex flex-col overflow-hidden min-w-0">
+                  <span className="text-text font-medium truncate text-sm sm:text-base">{selectedFile.name}</span>
+                  <span className="text-subtext text-xs sm:text-sm">{(selectedFile.size / 1024).toFixed(1)} KB</span>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedFile(null)}
-                className="text-subtext hover:text-error transition-colors p-1 rounded-full flex-shrink-0 ml-4"
+                className="text-subtext hover:text-error transition-colors p-1 rounded-full flex-shrink-0"
               >
-                <CloseIcon className="w-6 h-6" />
+                <CloseIcon className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </motion.div>
             
@@ -245,7 +245,7 @@ function DocumentParserPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="w-full bg-surface border border-border rounded-xl p-6 mt-8 shadow-soft"
+              className="w-full bg-surface border border-border rounded-xl p-4 sm:p-6 mt-6 sm:mt-8 shadow-soft"
             >
               <h3 className="text-2xl font-semibold text-text mb-3 text-left">AI Analysis</h3>
               <p className="text-subtext text-left whitespace-pre-line">{results}</p>

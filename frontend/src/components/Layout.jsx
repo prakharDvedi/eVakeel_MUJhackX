@@ -1,8 +1,9 @@
 // File: frontend/src/components/Layout.jsx
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Outlet, Link } from 'react-router-dom'; // Import Link
+import { FaBars, FaTimes } from 'react-icons/fa';
 
 // This is the generic placeholder icon
 const IconPlaceholder = ({ className }) => (
@@ -13,6 +14,16 @@ const IconPlaceholder = ({ className }) => (
 
 
 function Layout() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
+
   return (
     // Main container is 'relative' to hold the background
     <div className="bg-secondary text-text min-h-screen flex flex-col font-sans overflow-x-hidden relative">
@@ -44,31 +55,87 @@ function Layout() {
       <div className="relative z-10 flex flex-col min-h-screen">
       
         {/* ========== NAVBAR ========== */}
-        <motion.header 
+        <motion.header
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="bg-surface/80 border-b border-border sticky top-0 backdrop-blur-sm"
+          className="bg-surface/80 border-b border-border sticky top-0 backdrop-blur-sm z-50"
         >
-          <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
-            {/* Logo now links back to home */}
-            <Link to="/">
-              <img 
-                src="/logo.png" // Changed to .png as per your last code
-                alt="eVakeel Logo" 
-                className="h-8 w-auto" 
-              />
-            </Link>
-            <div className="flex items-center space-x-6">
-              <Link to="/about" className="font-medium text-subtext hover:text-text transition-colors">About</Link>
-              <Link to="/features" className="font-medium text-subtext hover:text-text transition-colors">Features</Link>
-              <Link 
-                to="/login" 
-                className="bg-active text-white font-medium px-5 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity"
-              >
-                Login
+          <nav className="container mx-auto px-6 py-4">
+            <div className="flex justify-between items-center">
+              {/* Logo now links back to home */}
+              <Link to="/" onClick={closeMenu}>
+                <img
+                  src="/logo.png"
+                  alt="eVakeel Logo"
+                  className="h-8 w-auto"
+                />
               </Link>
+
+              {/* Desktop Navigation */}
+              <div className="hidden md:flex items-center space-x-6">
+                <Link to="/about" className="font-medium text-subtext hover:text-text transition-colors">About</Link>
+                <Link to="/pricing" className="font-medium text-subtext hover:text-text transition-colors">Pricing</Link>
+                <Link to="/features" className="font-medium text-subtext hover:text-text transition-colors">Features</Link>
+                <Link
+                  to="/login"
+                  className="bg-active text-white font-medium px-5 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity"
+                >
+                  Login
+                </Link>
+              </div>
+
+              {/* Mobile Menu Button */}
+              <button
+                onClick={toggleMenu}
+                className="md:hidden text-text hover:text-active transition-colors p-2"
+                aria-label="Toggle menu"
+              >
+                {isMenuOpen ? <FaTimes className="w-6 h-6" /> : <FaBars className="w-6 h-6" />}
+              </button>
             </div>
+
+            {/* Mobile Navigation Menu */}
+            {isMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="md:hidden mt-4 pb-4 border-t border-border pt-4"
+              >
+                <div className="flex flex-col space-y-4">
+                  <Link
+                    to="/about"
+                    onClick={closeMenu}
+                    className="font-medium text-subtext hover:text-text transition-colors py-2"
+                  >
+                    About
+                  </Link>
+                  <Link
+                    to="/pricing"
+                    onClick={closeMenu}
+                    className="font-medium text-subtext hover:text-text transition-colors py-2"
+                  >
+                    Pricing
+                  </Link>
+                  <Link
+                    to="/features"
+                    onClick={closeMenu}
+                    className="font-medium text-subtext hover:text-text transition-colors py-2"
+                  >
+                    Features
+                  </Link>
+                  <Link
+                    to="/login"
+                    onClick={closeMenu}
+                    className="bg-active text-white font-medium px-5 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity inline-block text-center"
+                  >
+                    Login
+                  </Link>
+                </div>
+              </motion.div>
+            )}
           </nav>
         </motion.header>
 
