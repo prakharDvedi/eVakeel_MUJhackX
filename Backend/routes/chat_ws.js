@@ -9,43 +9,18 @@ module.exports = async function (fastify, opts) {
         const ws = connection.socket;
         const queryToken = req.query && req.query.token ? req.query.token : null;
 
-        // Step 1: authenticate token (query param or first message)
+        // Firebase disabled - skip authentication
         (async () => {
             try {
-                let token = queryToken;
-                if (!token) {
-                    // wait for first message which should be auth or init (client may send auth first)
-                    const raw = await onceMessage(ws);
-                    const msg = tryParse(raw);
-                    if (msg && msg.type === 'auth' && msg.token) token = msg.token;
-                    else {
-                        // if no token, close
-                        ws.send(JSON.stringify({ type: 'error', message: 'Missing auth token' }));
-                        ws.close();
-                        return;
-                    }
-                }
-                // verify token
-                let decoded;
-                try {
-                    decoded = await fastify.verifyIdToken(token);
-                } catch (e) {
-                    ws.send(JSON.stringify({ type: 'error', message: 'Invalid auth token' }));
-                    ws.close();
-                    return;
-                }
-                // auth ok - now wait for init payload (if not already sent)
-                let initMsg = null;
-                if (!queryToken) {
-                    // if we consumed an initial message for auth, we need to receive the init now
-                    const raw = await onceMessage(ws);
-                    initMsg = tryParse(raw);
-                } else {
-                    const raw = await onceMessage(ws);
-                    initMsg = tryParse(raw);
-                }
+                // Skip token check - allow all connections
+                let decoded = { uid: 'anonymous', email: null, name: null };
+                
+                // Wait for init message
+                const raw = await onceMessage(ws);
+                const initMsg = tryParse(raw);
+                
                 if (!initMsg || initMsg.type !== 'init' || !Array.isArray(initMsg.messages)) {
-                    ws.send(JSON.stringify({ type: 'error', message: 'Invalid init payload' }));
+                    ws.send(JSON.stringify({ type: 'error', message: 'Invalid init payload. Expected: {type:"init", messages:[]}' }));
                     ws.close();
                     return;
                 }
@@ -53,15 +28,15 @@ module.exports = async function (fastify, opts) {
                 // Build session record
                 const sessionId = uuidv4();
                 const startTime = Date.now();
-                // optionally store initial session doc, will update as stream proceeds
-                const sessionRef = fastify.firestore.collection('sessions').doc(sessionId);
-                await sessionRef.set({
-                    sessionId,
-                    userId: decoded.uid,
-                    startedAt: fastify.firebaseAdmin.firestore.FieldValue.serverTimestamp(),
-                    messages: initMsg.messages,
-                    status: 'streaming',
-                });
+                // Firebase disabled - skip session storage
+                // const sessionRef = fastify.firestore.collection('sessions').doc(sessionId);
+                // await sessionRef.set({
+                //     sessionId,
+                //     userId: decoded.uid,
+                //     startedAt: fastify.firebaseAdmin.firestore.FieldValue.serverTimestamp(),
+                //     messages: initMsg.messages,
+                //     status: 'streaming',
+                // });
 
                 // Proxy to AI microservice streaming endpoint
                 // We will forward chunks to client as {type:'token', data:'...'}
@@ -77,11 +52,11 @@ module.exports = async function (fastify, opts) {
                 // streamToClient will forward tokens and resolve when stream ends
                 await aiProxy.streamToClient('stream', aiInitPayload, ws, { maxBytes: process.env.MAX_STREAM_BYTES });
 
-                // update session end
-                await sessionRef.update({
-                    endedAt: fastify.firebaseAdmin.firestore.FieldValue.serverTimestamp(),
-                    status: 'done',
-                });
+                // Firebase disabled - skip session update
+                // await sessionRef.update({
+                //     endedAt: fastify.firebaseAdmin.firestore.FieldValue.serverTimestamp(),
+                //     status: 'done',
+                // });
 
                 // close ws if still open
                 if (ws && ws.readyState === 1) {

@@ -10,33 +10,22 @@ module.exports = async function (fastify, opts) {
 
             if (!idToken) return reply.code(400).send({ status: 'error', error: 'Missing idToken' });
 
-            const decoded = await fastify.verifyIdToken(idToken);
+            // Firebase disabled - skip token verification
+            const decoded = { uid: 'anonymous', email: null, name: null };
             const uid = decoded.uid;
-            const usersRef = fastify.firestore.collection('users').doc(uid);
-            const doc = await usersRef.get();
-            if (!doc.exists) {
-                const profile = {
-                    uid,
-                    email: decoded.email || null,
-                    name: decoded.name || null,
-                    createdAt: fastify.firebaseAdmin.firestore.FieldValue.serverTimestamp(),
-                    roles: ['user'],
-                };
-                await usersRef.set(profile);
-            }
-            const profileSnap = await usersRef.get();
-            return reply.send({ status: 'ok', data: { uid, claims: decoded, profile: profileSnap.data() } });
+            // Firebase disabled - return anonymous user
+            return reply.send({ status: 'ok', data: { uid, claims: decoded, profile: { uid: 'anonymous', roles: ['user'] } } });
         } catch (err) {
             request.log.warn(err);
             return reply.code(401).send({ status: 'error', error: 'Invalid token' });
         }
     });
 
-    fastify.get('/me', { preValidation: [fastify.authenticate] }, async (request, reply) => {
+    fastify.get('/me', async (request, reply) => {
         try {
-            const uid = request.user.uid;
-            const doc = await fastify.firestore.collection('users').doc(uid).get();
-            return reply.send({ status: 'ok', data: { user: request.user, profile: doc.exists ? doc.data() : null } });
+            const uid = 'anonymous';
+            // Firebase disabled - return anonymous user
+            return reply.send({ status: 'ok', data: { user: { uid: 'anonymous' }, profile: null } });
         } catch (err) {
             request.log.error(err);
             return reply.code(500).send({ status: 'error', error: 'Server error' });

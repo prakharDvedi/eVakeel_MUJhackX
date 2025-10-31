@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import TextareaAutosize from 'react-textarea-autosize';
 // import { BotMessage } from '../components/BotMessage'; // <-- No longer needed
 import { EmptyChatView } from '../components/EmptyChatView';
+import { sendChatMessage } from '../services/api';
 
 // --- ICONS & INDICATORS ---
 
@@ -44,6 +45,8 @@ function LegalAdvisorPage() {
   const [input, setInput] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [sessionId, setSessionId] = useState(null); // Track session for conversation continuity
+  const [error, setError] = useState(null);
   const chatEndRef = useRef(null);
 
   // Auto-scroll to the bottom when messages change
@@ -51,24 +54,64 @@ function LegalAdvisorPage() {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
-  // --- NEW: Helper function to handle sending any query ---
-  const sendQuery = (query) => {
+  // --- Helper function to handle sending any query ---
+  const sendQuery = async (query) => {
     if (!query.trim()) return;
 
     const userMessage = { sender: 'user', text: query };
     setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
+    setError(null);
 
-    // --- FAKE BACKEND CALL ---
-    setTimeout(() => {
-      const botResponse = {
+    try {
+      // Prepare messages array in OpenAI format
+      const allMessages = messages.map(msg => ({
+        role: msg.sender === 'user' ? 'user' : 'assistant',
+        content: msg.text
+      }));
+      
+      // Add the new user message
+      allMessages.push({
+        role: 'user',
+        content: query
+      });
+
+      // Call the backend API
+      const response = await sendChatMessage({
+        messages: allMessages,
+        sessionId: sessionId,
+        jurisdiction: 'india',
+        domain: null,
+      });
+
+      if (response.status === 'ok' && response.data) {
+        // Update session ID if provided
+        if (response.data.sessionId) {
+          setSessionId(response.data.sessionId);
+        }
+
+        // Add bot response
+        const botResponse = {
+          sender: 'bot',
+          text: response.data.answer || 'No response received',
+        };
+        setMessages((prev) => [...prev, botResponse]);
+      } else {
+        throw new Error(response.error || 'Unknown error');
+      }
+    } catch (err) {
+      console.error('[LegalAdvisorPage] Error sending message:', err);
+      setError(err.message || 'Failed to send message. Please try again.');
+      
+      // Show error message to user
+      const errorMessage = {
         sender: 'bot',
-        text: "This is a simulated response. In a real app, this text would come from your Gen AI model after processing your input about: '" + userMessage.text + "'",
+        text: `Error: ${err.message || 'Failed to get response from server. Please check if the backend is running.'}`,
       };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-      setMessages((prev) => [...prev, botResponse]);
-    }, 2500);
-    // -------------------------
+    }
   };
   
   // --- UPDATED: handleSubmit now uses the helper ---
@@ -171,6 +214,11 @@ function LegalAdvisorPage() {
         <p className="text-xs text-subtext mt-2">
           Your input will be sent to our AI model for analysis. Please do not share sensitive personal information.
         </p>
+        {error && (
+          <p className="text-xs text-red-500 mt-1">
+            {error}
+          </p>
+        )}
       </div>
     </div>
   );

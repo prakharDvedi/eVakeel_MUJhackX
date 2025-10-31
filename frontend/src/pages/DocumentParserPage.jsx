@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { analyzeDocument, analyzeDocumentByPath } from '../services/api';
+import { parseMarkdown } from '../utils/markdown';
 
 // --- SVG ICONS ---
 const UploadIcon = ({ className }) => (
@@ -61,8 +63,9 @@ const LoadingIndicator = () => (
 function DocumentParserPage() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isDragOver, setIsDragOver] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // NEW state
-  const [results, setResults] = useState(null);     // NEW state
+  const [isLoading, setIsLoading] = useState(false);
+  const [results, setResults] = useState(null);
+  const [error, setError] = useState(null);
 
   const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/webp'];
 
@@ -101,21 +104,36 @@ function DocumentParserPage() {
     }
   };
 
-  const handleSubmit = () => {
-    setIsLoading(true); // Set loading state
-    setResults(null);
+  const handleSubmit = async () => {
+    if (!selectedFile) return;
     
-    // --- FAKE BACKEND CALL ---
-    setTimeout(() => {
+    setIsLoading(true);
+    setResults(null);
+    setError(null);
+    
+    try {
+      console.log('[DocumentParserPage] Analyzing file:', selectedFile.name, selectedFile.type);
+      
+      // Call the backend API
+      const response = await analyzeDocument(selectedFile);
+      
+      // Format the response for display
+      if (response.full_analysis) {
+        setResults(response.full_analysis);
+      } else if (response.error) {
+        throw new Error(response.error);
+      } else {
+        setResults('Analysis complete, but no detailed results were returned.');
+      }
+    } catch (err) {
+      console.error('[DocumentParserPage] Error analyzing document:', err);
+      setError(err.message || 'Failed to analyze document. Please try again.');
+      
+      // Show error to user
+      setResults(`Error: ${err.message || 'Failed to analyze document. Please check if the backend is running and the file is valid.'}`);
+    } finally {
       setIsLoading(false);
-      setResults(
-        `Here is the AI-generated summary for '${selectedFile.name}':\n
-        - **Document Type:** Rental Agreement\n
-        - **Key Clauses:** The security deposit is set at two months' rent. The notice period for termination is 30 days.\n
-        - **Warning:** Clause 4.b regarding late fees appears to be non-standard and heavily favors the landlord. Please review this with a legal professional.`
-      );
-    }, 3000); // Simulate 3-second analysis
-    // -------------------------
+    }
   };
 
   return (
@@ -248,9 +266,17 @@ function DocumentParserPage() {
               className="w-full bg-surface border border-border rounded-xl p-4 sm:p-6 mt-6 sm:mt-8 shadow-soft"
             >
               <h3 className="text-2xl font-semibold text-text mb-3 text-left">AI Analysis</h3>
-              <p className="text-subtext text-left whitespace-pre-line">{results}</p>
+              <div 
+                className={`text-left ${error ? 'text-red-500' : 'text-subtext'}`}
+                dangerouslySetInnerHTML={{ __html: error ? results : parseMarkdown(results) }}
+              />
+              {error && (
+                <p className="text-xs text-red-500 mt-2">
+                  {error}
+                </p>
+              )}
               <button
-                onClick={() => { setSelectedFile(null); setResults(null); }}
+                onClick={() => { setSelectedFile(null); setResults(null); setError(null); }}
                 className="w-full bg-active/20 text-active font-semibold py-3 rounded-lg mt-6 text-base hover:bg-active/40 transition-colors"
               >
                 Analyze Another Document

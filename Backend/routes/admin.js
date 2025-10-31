@@ -7,9 +7,8 @@ module.exports = async function (fastify, opts) {
         // allow unauthenticated admin routes? no - require authenticate first
     });
 
-    fastify.post('/ingest', { preValidation: [fastify.authenticate] }, async (request, reply) => {
-        const claims = request.user.claims || {};
-        if (!claims.admin) return reply.code(403).send({ status: 'error', error: 'Admin only' });
+    fastify.post('/ingest', async (request, reply) => {
+        // Auth disabled - skip admin check
         try {
             const { corpusUrl } = request.body;
             if (!corpusUrl) return reply.code(400).send({ status: 'error', error: 'corpusUrl required' });
@@ -21,9 +20,8 @@ module.exports = async function (fastify, opts) {
         }
     });
 
-    fastify.post('/rebuild-index', { preValidation: [fastify.authenticate] }, async (request, reply) => {
-        const claims = request.user.claims || {};
-        if (!claims.admin) return reply.code(403).send({ status: 'error', error: 'Admin only' });
+    fastify.post('/rebuild-index', async (request, reply) => {
+        // Auth disabled - skip admin check
         try {
             const resp = await aiProxy.callAI('admin/rebuild-index', {});
             return reply.send({ status: 'ok', data: resp });
@@ -33,9 +31,8 @@ module.exports = async function (fastify, opts) {
         }
     });
 
-    fastify.get('/metrics', { preValidation: [fastify.authenticate] }, async (request, reply) => {
-        const claims = request.user.claims || {};
-        if (!claims.admin) return reply.code(403).send({ status: 'error', error: 'Admin only' });
+    fastify.get('/metrics', async (request, reply) => {
+        // Auth disabled - skip admin check
         try {
             const resp = await aiProxy.callAI('admin/metrics', {});
             return reply.send({ status: 'ok', data: resp });

@@ -1,0 +1,29 @@
+# Python virtual environments
+.venv/
+venv/
+ENV/
+env/
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables
+.env
+.env.local
+*.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+models/__pycache__/
+models/.env

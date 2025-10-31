@@ -2,47 +2,29 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { parseMarkdown } from '../utils/markdown';
 
-// Animation variants for the container (to stagger children)
+// Animation variants for the container
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.02, // Time between each word appearing
+      duration: 0.3
     },
   },
 };
 
-// Animation variants for each word
-const wordVariants = {
-  hidden: { opacity: 0, y: 5 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: { type: 'spring', stiffness: 200, damping: 20 }
-  },
-};
-
 export const BotMessage = ({ text }) => {
-  const words = text.split(' ');
+  const htmlContent = parseMarkdown(text);
 
   return (
     <motion.div
-      className="bg-surface text-text p-3 rounded-lg max-w-xs sm:max-w-md md:max-w-lg shadow-soft break-words"
+      className="bg-surface text-text p-4 rounded-lg max-w-lg shadow-soft prose prose-invert prose-headings:text-text prose-p:text-text prose-strong:text-text prose-code:text-text max-w-none"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-    >
-      {words.map((word, index) => (
-        <motion.span
-          key={index}
-          className="inline-block mr-[4px]" // Add space between words
-          variants={wordVariants}
-        >
-          {word}
-        </motion.span>
-      ))}
-    </motion.div>
+      dangerouslySetInnerHTML={{ __html: htmlContent }}
+    />
   );
 };
