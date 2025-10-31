@@ -27,3 +27,6 @@ Thumbs.db
 # Project specific
 models/__pycache__/
 models/.env
+
+# Backend config
+Backend/config.js
