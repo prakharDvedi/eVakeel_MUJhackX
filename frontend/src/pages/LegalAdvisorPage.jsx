@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import TextareaAutosize from 'react-textarea-autosize';
 import { EmptyChatView } from '../components/EmptyChatView';
 import { sendChatMessage } from '../services/api';
+import { parseMarkdown } from '../utils/markdown';
 
 const SendIcon = ({ className }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -75,9 +76,12 @@ function LegalAdvisorPage() {
           setSessionId(response.data.sessionId);
         }
 
+        // Convert markdown to HTML for proper rendering
+        const answerText = response.data.answer || 'No response received';
         const botResponse = {
           sender: 'bot',
-          text: response.data.answer || 'No response received',
+          text: answerText, // Store original text
+          html: parseMarkdown(answerText), // Store parsed HTML
         };
         setMessages((prev) => [...prev, botResponse]);
       } else {
@@ -136,9 +140,12 @@ function LegalAdvisorPage() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-surface text-text p-3 rounded-lg max-w-xs sm:max-w-md md:max-w-lg shadow-soft break-words"
+                  className="bg-surface text-text p-3 rounded-lg max-w-xs sm:max-w-md md:max-w-lg shadow-soft break-words prose prose-invert prose-headings:text-text prose-p:text-text prose-strong:text-text max-w-none"
                 >
-                  <div className="whitespace-pre-wrap">{msg.text}</div>
+                  <div 
+                    dangerouslySetInnerHTML={{ __html: msg.html || parseMarkdown(msg.text) }}
+                    className="whitespace-pre-wrap"
+                  />
                 </motion.div>
               )}
             </div>

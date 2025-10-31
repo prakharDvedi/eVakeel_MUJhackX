@@ -152,3 +152,45 @@ export const parseMarkdown = (text) => {
   return html;
 };
 
+/**
+ * Strip markdown formatting from text, converting it to plain text
+ * @param {string} text - Text with markdown formatting
+ * @returns {string} - Plain text without markdown
+ */
+export const stripMarkdown = (text) => {
+  if (!text) return '';
+  
+  let plain = text;
+  
+  // Remove code blocks
+  plain = plain.replace(/```[\s\S]*?```/g, '');
+  
+  // Remove inline code
+  plain = plain.replace(/`([^`]+)`/g, '$1');
+  
+  // Remove bold **text** first (before processing single asterisks)
+  plain = plain.replace(/\*\*([^*]+?)\*\*/g, '$1');
+  plain = plain.replace(/__([^_]+?)__/g, '$1');
+  
+  // Remove italic *text* or _text_ (single asterisks/underscores)
+  // This regex matches single asterisks that are not part of bold
+  plain = plain.replace(/(^|[^*])\*([^*]+?)\*([^*]|$)/g, '$1$2$3');
+  plain = plain.replace(/(^|[^_])_([^_]+?)_([^_]|$)/g, '$1$2$3');
+  
+  // Remove headers (keep the text)
+  plain = plain.replace(/^#{1,6}\s+(.+)$/gm, '$1');
+  
+  // Remove links but keep the text [text](url) -> text
+  plain = plain.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+  
+  // Remove list markers but keep the content
+  plain = plain.replace(/^[\*\-\+]\s+/gm, '');
+  plain = plain.replace(/^\d+\.\s+/gm, '');
+  
+  // Clean up any remaining formatting artifacts
+  plain = plain.replace(/\*\*/g, '');
+  plain = plain.replace(/__/g, '');
+  
+  return plain.trim();
+};
+
