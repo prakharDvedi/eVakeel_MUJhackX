@@ -1,4 +1,3 @@
-// plugins/firebase.js
 const fp = require('fastify-plugin');
 const admin = require('firebase-admin');
 
@@ -14,7 +13,6 @@ module.exports = fp(async function (fastify, opts) {
                 const svc = JSON.parse(decoded);
                 credential = admin.credential.cert(svc);
             } else {
-                // when GOOGLE_APPLICATION_CREDENTIALS env var is present, applicationDefault() will use it
                 credential = admin.credential.applicationDefault();
             }
 
@@ -35,13 +33,11 @@ module.exports = fp(async function (fastify, opts) {
     fastify.decorate('firestore', firestore);
     fastify.decorate('firebaseStorage', storage);
 
-    // verify ID token (option to check revocation via checkRevoked argument)
     fastify.decorate('verifyIdToken', async (idToken, checkRevoked = false) => {
         if (!idToken) throw new Error('Missing ID token');
         return await admin.auth().verifyIdToken(idToken, checkRevoked);
     });
 
-    // helper: get user record
     fastify.decorate('getUserRecord', async (uid) => {
         return admin.auth().getUser(uid);
     });

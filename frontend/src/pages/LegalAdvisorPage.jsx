@@ -1,31 +1,24 @@
-// File: frontend/src/pages/LegalAdvisorPage.jsx
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import TextareaAutosize from 'react-textarea-autosize';
-// import { BotMessage } from '../components/BotMessage'; // <-- No longer needed
 import { EmptyChatView } from '../components/EmptyChatView';
 import { sendChatMessage } from '../services/api';
 
-// --- ICONS & INDICATORS ---
-
-// A simple send icon
 const SendIcon = ({ className }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
   </svg>
 );
 
-// --- UPDATED: LoadingIndicator is now a spinner with your logo ---
 const LoadingIndicator = () => (
   <motion.div
-    className="flex justify-start p-4" // Aligns to the left like a bot message
+    className="flex justify-start p-4"
     initial={{ opacity: 0, y: 10 }}
     animate={{ opacity: 1, y: 0 }}
     exit={{ opacity: 0, y: -10 }}
   >
     <motion.div
-      className="w-8 h-8 p-1" // Container for the spinning logo
+      className="w-8 h-8 p-1"
       animate={{ rotate: 360 }}
       transition={{ 
         duration: 1.5, 
@@ -38,23 +31,19 @@ const LoadingIndicator = () => (
   </motion.div>
 );
 
-// --- MAIN PAGE COMPONENT ---
-
 function LegalAdvisorPage() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [sessionId, setSessionId] = useState(null); // Track session for conversation continuity
+  const [sessionId, setSessionId] = useState(null);
   const [error, setError] = useState(null);
   const chatEndRef = useRef(null);
 
-  // Auto-scroll to the bottom when messages change
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
-  // --- Helper function to handle sending any query ---
   const sendQuery = async (query) => {
     if (!query.trim()) return;
 
@@ -64,19 +53,16 @@ function LegalAdvisorPage() {
     setError(null);
 
     try {
-      // Prepare messages array in OpenAI format
       const allMessages = messages.map(msg => ({
         role: msg.sender === 'user' ? 'user' : 'assistant',
         content: msg.text
       }));
       
-      // Add the new user message
       allMessages.push({
         role: 'user',
         content: query
       });
 
-      // Call the backend API
       const response = await sendChatMessage({
         messages: allMessages,
         sessionId: sessionId,
@@ -85,12 +71,10 @@ function LegalAdvisorPage() {
       });
 
       if (response.status === 'ok' && response.data) {
-        // Update session ID if provided
         if (response.data.sessionId) {
           setSessionId(response.data.sessionId);
         }
 
-        // Add bot response
         const botResponse = {
           sender: 'bot',
           text: response.data.answer || 'No response received',
@@ -103,7 +87,6 @@ function LegalAdvisorPage() {
       console.error('[LegalAdvisorPage] Error sending message:', err);
       setError(err.message || 'Failed to send message. Please try again.');
       
-      // Show error message to user
       const errorMessage = {
         sender: 'bot',
         text: `Error: ${err.message || 'Failed to get response from server. Please check if the backend is running.'}`,
@@ -114,18 +97,16 @@ function LegalAdvisorPage() {
     }
   };
   
-  // --- UPDATED: handleSubmit now uses the helper ---
   const handleSubmit = (e) => {
     e.preventDefault();
     sendQuery(input);
     setInput('');
   };
 
-  // --- NEW: Handler for clickable prompts ---
   const handlePromptClick = (prompt) => {
-    setInput(prompt); // Set input for visual feedback (optional)
-    sendQuery(prompt); // Send the query
-    setInput(''); // Clear input after sending
+    setInput(prompt);
+    sendQuery(prompt);
+    setInput('');
   };
 
   const inputVariants = {
@@ -134,19 +115,14 @@ function LegalAdvisorPage() {
   };
 
   return (
-    // Your layout: 'flex-grow items-center flex flex-col'
     <div className="flex-grow items-center flex flex-col">
-
-      {/* 1. CHAT MESSAGE AREA */}
       <div className="flex-grow overflow-y-auto p-4 sm:p-6 space-y-4 custom-scrollbar w-full max-w-4xl">
         {messages.length === 0 ? (
-          // --- UPDATED: Pass the handler to EmptyChatView ---
           <EmptyChatView onPromptClick={handlePromptClick} />
         ) : (
           messages.map((msg, index) => (
             <div key={index} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
               {msg.sender === 'user' ? (
-                // --- UPDATED: Added motion.div for scale-in animation ---
                 <motion.div
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -156,7 +132,6 @@ function LegalAdvisorPage() {
                   <div className="whitespace-pre-wrap">{msg.text}</div>
                 </motion.div>
               ) : (
-                // --- UPDATED: Replaced BotMessage with instant-display div ---
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -177,8 +152,6 @@ function LegalAdvisorPage() {
         <div ref={chatEndRef} />
       </div>
 
-      {/* 2. INPUT AREA */}
-      {/* Your layout: 'w-3/5' */}
       <div className="w-full max-w-2xl flex flex-col items-center p-4">
         <motion.form
           onSubmit={handleSubmit}

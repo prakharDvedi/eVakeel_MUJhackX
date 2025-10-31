@@ -1,6 +1,3 @@
-// frontend/src/services/api.js
-// API service for backend communication
-
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
 
 /**
@@ -54,7 +51,6 @@ export async function analyzeDocument(file, inputText = null) {
   try {
     console.log('[API] Analyzing document:', file.name);
     
-    // First, upload the file
     const formData = new FormData();
     formData.append('file', file);
     
@@ -71,7 +67,6 @@ export async function analyzeDocument(file, inputText = null) {
     const uploadData = await uploadResponse.json();
     console.log('[API] File uploaded:', uploadData);
     
-    // Get file path from response
     const filePath = uploadData.data?.filePath || 
                      uploadData.data?.storageUrl?.replace('file:', '') || 
                      uploadData.filePath;
@@ -80,11 +75,9 @@ export async function analyzeDocument(file, inputText = null) {
       throw new Error('File path not returned from upload. Response: ' + JSON.stringify(uploadData));
     }
 
-    // Determine if it's PDF or image
     const isPDF = file.type === 'application/pdf';
     const isImage = file.type.startsWith('image/');
     
-    // Then, analyze the document
     const analyzeResponse = await fetch(`${API_BASE_URL}/documents/analyze`, {
       method: 'POST',
       headers: {
@@ -105,7 +98,6 @@ export async function analyzeDocument(file, inputText = null) {
     const analyzeData = await analyzeResponse.json();
     console.log('[API] Analysis response received:', analyzeData);
     
-    // Extract data from response structure
     if (analyzeData.status === 'ok' && analyzeData.data) {
       return analyzeData.data;
     } else if (analyzeData.error) {
@@ -119,7 +111,7 @@ export async function analyzeDocument(file, inputText = null) {
 }
 
 /**
- * Alternative: Analyze document directly with file path (for testing)
+ * Analyze document directly with file path
  * @param {string} filePath - Path to the file
  * @param {string} fileType - 'pdf' or 'image'
  * @param {string} inputText - Optional analysis prompt/question
@@ -155,7 +147,6 @@ export async function analyzeDocumentByPath(filePath, fileType, inputText = null
     const responseData = await response.json();
     console.log('[API] Analysis response received:', responseData);
     
-    // Extract data from response structure
     if (responseData.status === 'ok' && responseData.data) {
       return responseData.data;
     } else if (responseData.error) {

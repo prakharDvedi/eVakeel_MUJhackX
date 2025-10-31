@@ -1,4 +1,3 @@
-// routes/incidents.js
 const aiProxy = require('../services/aiProxy');
 const { v4: uuidv4 } = require('uuid');
 
@@ -9,7 +8,6 @@ module.exports = async function (fastify, opts) {
         try {
             const payload = { user_id: 'anonymous', incident_type, description, jurisdiction, evidence_doc_ids };
             const resp = await aiProxy.callAI('incidents/advise', payload);
-            // Firebase disabled - skip storing incident
             const id = uuidv4();
             return reply.send({ status: 'ok', data: resp });
         } catch (err) {

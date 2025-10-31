@@ -1,20 +1,16 @@
-// services/aiProxy.js
 const { OpenAI } = require('openai');
 const fs = require('fs');
 const path = require('path');
 const pdfParse = require('pdf-parse');
 const config = require('../config');
 
-// Load OpenAI API key from config
 const OPENAI_API_KEY = config.openai.apiKey;
 const OPENAI_MODEL = config.openai.model;
 
-// Debug: Check API key loading
 console.log('[aiProxy] Config loaded - API key exists:', !!OPENAI_API_KEY);
 console.log('[aiProxy] API key length:', OPENAI_API_KEY ? OPENAI_API_KEY.length : 0);
 console.log('[aiProxy] Model:', OPENAI_MODEL);
 
-// Initialize OpenAI client
 const client = OPENAI_API_KEY ? new OpenAI({ apiKey: OPENAI_API_KEY }) : null;
 
 console.log('[aiProxy] Initialized with model:', OPENAI_MODEL);
@@ -54,7 +50,6 @@ async function generate(payload) {
     try {
         const { messages, image_path, pdf_path } = payload;
         
-        // Extract text from PDF if provided
         let extractedText = null;
         if (pdf_path && fs.existsSync(pdf_path)) {
             console.log('[aiProxy.generate] Extracting text from PDF:', pdf_path);
@@ -64,7 +59,6 @@ async function generate(payload) {
             }
         }
         
-        // Prepare messages for OpenAI
         const openaiMessages = [];
         for (const msg of (messages || [])) {
             openaiMessages.push({
@@ -73,7 +67,6 @@ async function generate(payload) {
             });
         }
         
-        // Add extracted text as context if available
         if (extractedText) {
             const contextMsg = `Here is additional context from a document:\n\n${extractedText.substring(0, 4000)}`;
             if (openaiMessages.length > 0 && openaiMessages[openaiMessages.length - 1].role === 'user') {
@@ -83,7 +76,6 @@ async function generate(payload) {
             }
         }
         
-        // Call OpenAI API
         console.log('[aiProxy.generate] Calling OpenAI API with', openaiMessages.length, 'messages');
         console.log('[aiProxy.generate] First message preview:', openaiMessages[0]?.content?.substring(0, 100));
         
@@ -123,7 +115,6 @@ async function generate(payload) {
     } catch (error) {
         console.error('[aiProxy.generate] OpenAI API error:', error.message);
         
-        // Provide more helpful error messages
         let errorMessage = error.message;
         if (error.status === 401 || error.message.includes('Incorrect API key') || error.message.includes('Invalid API key')) {
             errorMessage = 'Invalid OpenAI API key. Please check your API key in Backend/config.js. Make sure it\'s the correct key from https://platform.openai.com/account/api-keys';
@@ -162,12 +153,10 @@ async function callAI(path, payload, timeout = 30000) {
                 extractedText = await extractTextFromPDF(pdf_path);
             }
             // TODO: Add image OCR support if needed
-            
             if (!extractedText) {
                 return { error: 'Could not extract text from document. File not found or format not supported.' };
             }
             
-            // Prepare analysis prompt
             const analysisPrompt = `Analyze this legal document and answer the following question:
 
 Question: ${input_text || 'Is this document legal? What are the key points and any red flags?'}
@@ -200,11 +189,10 @@ Provide a structured analysis with:
             
             const analysisText = response.choices[0].message.content;
             
-            // Parse response into structured format
             return {
                 summary: analysisText.substring(0, 500),
                 full_analysis: analysisText,
-                classification: 'unclear', // Could parse from response
+                classification: 'unclear',
                 key_points: [],
                 risks: [],
                 confidence: 0.8
@@ -221,14 +209,10 @@ Provide a structured analysis with:
 
 /**
  * Stream tokens from AI service to the client websocket.
- * Note: This is a simplified version - you can enhance it with OpenAI streaming later
  */
 async function streamToClient(aiStreamPath, initPayload, ws, opts = {}) {
-    // For now, just call generate and stream the response
-    // You can implement OpenAI streaming API here later
     const result = await generate(initPayload);
     if (result.answer) {
-        // Simulate streaming by sending chunks
         const chunks = result.answer.match(/.{1,50}/g) || [result.answer];
         for (const chunk of chunks) {
             if (ws && ws.readyState === 1) {

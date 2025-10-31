@@ -1,4 +1,3 @@
-// plugins/auth.js
 const fp = require('fastify-plugin');
 
 module.exports = fp(async function (fastify, opts) {
@@ -8,7 +7,6 @@ module.exports = fp(async function (fastify, opts) {
             let token = null;
             if (authHeader && authHeader.startsWith('Bearer ')) token = authHeader.split(' ')[1];
 
-            // fallback: allow token in query (useful for WebSocket handshake or tests)
             if (!token && request.query && request.query.token) token = request.query.token;
 
             if (!token) {
@@ -16,14 +14,12 @@ module.exports = fp(async function (fastify, opts) {
                 return;
             }
 
-            // verify token with firebase admin
             const decoded = await fastify.verifyIdToken(token).catch(err => { throw err; });
-            // attach user info
             request.user = {
                 uid: decoded.uid,
                 email: decoded.email || null,
                 name: decoded.name || null,
-                claims: decoded, // contains custom claims if any
+                claims: decoded,
             };
         } catch (err) {
             request.log.warn(err, 'Authentication failed');

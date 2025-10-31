@@ -1,4 +1,3 @@
-// routes/retrieve.js
 const aiProxy = require('../services/aiProxy');
 
 module.exports = async function (fastify, opts) {

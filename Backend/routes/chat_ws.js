@@ -1,21 +1,15 @@
-// routes/chat_ws.js
 const aiProxy = require('../services/aiProxy');
 const { v4: uuidv4 } = require('uuid');
 
 module.exports = async function (fastify, opts) {
-    // WebSocket endpoint: client connects and then sends an init JSON:
-    // { type: 'init', messages: [...], jurisdiction:'india', domain:'tenant', context_doc_ids:[] }
     fastify.get('/chat', { websocket: true }, (connection, req) => {
         const ws = connection.socket;
         const queryToken = req.query && req.query.token ? req.query.token : null;
 
-        // Firebase disabled - skip authentication
         (async () => {
             try {
-                // Skip token check - allow all connections
                 let decoded = { uid: 'anonymous', email: null, name: null };
                 
-                // Wait for init message
                 const raw = await onceMessage(ws);
                 const initMsg = tryParse(raw);
                 
@@ -25,10 +19,8 @@ module.exports = async function (fastify, opts) {
                     return;
                 }
 
-                // Build session record
                 const sessionId = uuidv4();
                 const startTime = Date.now();
-                // Firebase disabled - skip session storage
                 // const sessionRef = fastify.firestore.collection('sessions').doc(sessionId);
                 // await sessionRef.set({
                 //     sessionId,
@@ -38,8 +30,6 @@ module.exports = async function (fastify, opts) {
                 //     status: 'streaming',
                 // });
 
-                // Proxy to AI microservice streaming endpoint
-                // We will forward chunks to client as {type:'token', data:'...'}
                 const aiInitPayload = {
                     user_id: decoded.uid,
                     jurisdiction: initMsg.jurisdiction || 'india',
@@ -49,7 +39,6 @@ module.exports = async function (fastify, opts) {
                     sessionId,
                 };
 
-                // streamToClient will forward tokens and resolve when stream ends
                 await aiProxy.streamToClient('stream', aiInitPayload, ws, { maxBytes: process.env.MAX_STREAM_BYTES });
 
                 // Firebase disabled - skip session update
@@ -58,7 +47,6 @@ module.exports = async function (fastify, opts) {
                 //     status: 'done',
                 // });
 
-                // close ws if still open
                 if (ws && ws.readyState === 1) {
                     ws.send(JSON.stringify({ type: 'done', data: { sessionId } }));
                     ws.close();
@@ -69,25 +57,21 @@ module.exports = async function (fastify, opts) {
             }
         })();
 
-        // helper to handle client 'cancel' messages while streaming
         ws.on('message', (msg) => {
             try {
                 const parsed = tryParse(msg);
                 if (parsed && parsed.type === 'cancel') {
-                    // send cancel to client and close - we rely on aiProxy.streamToClient to detect ws.close
                     if (ws.readyState === 1) {
                         ws.send(JSON.stringify({ type: 'cancelled' }));
                         ws.close();
                     }
                 }
             } catch (e) {
-                // ignore
             }
         });
     });
 };
 
-// small helpers
 function onceMessage(ws) {
     return new Promise((resolve, reject) => {
         const onMsg = (msg) => {

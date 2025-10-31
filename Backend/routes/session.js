@@ -1,6 +1,4 @@
-// routes/session.js
 module.exports = async function (fastify, opts) {
-    // Get a specific session (conversation history)
     fastify.get('/:sessionId', async (request, reply) => {
         const { sessionId } = request.params;
         const userId = 'anonymous';
@@ -17,15 +15,10 @@ module.exports = async function (fastify, opts) {
             
             const sessionData = sessionSnap.data();
             
-            // Auth disabled - skip ownership check
-            
-            // Get conversation history (prefer 'conversation' array, fallback to legacy format)
             let conversation = [];
             if (sessionData.conversation && Array.isArray(sessionData.conversation)) {
-                // New format: conversation array with all messages
                 conversation = sessionData.conversation;
             } else if (sessionData.messages && Array.isArray(sessionData.messages)) {
-                // Legacy format: reconstruct from messages + answer
                 conversation = sessionData.messages;
                 if (sessionData.answer) {
                     conversation.push({
@@ -50,7 +43,6 @@ module.exports = async function (fastify, opts) {
         }
     });
     
-    // List all sessions for the user
     fastify.get('/', async (request, reply) => {
         const userId = 'anonymous';
         const limit = parseInt(request.query.limit || '10', 10);
@@ -70,17 +62,14 @@ module.exports = async function (fastify, opts) {
             const sessions = [];
             sessionsSnapshot.forEach(doc => {
                 const data = doc.data();
-                // Get preview from last assistant message in conversation
                 let preview = '';
                 let messageCount = 0;
                 
                 if (data.conversation && Array.isArray(data.conversation)) {
-                    // New format: find last assistant message
                     const lastAssistantMsg = data.conversation.filter(m => m.role === 'assistant').pop();
                     preview = lastAssistantMsg?.content?.substring(0, 100) || '';
                     messageCount = data.conversation.length;
                 } else {
-                    // Legacy format
                     preview = data.answer?.substring(0, 100) || '';
                     messageCount = data.messages?.length || 0;
                 }
