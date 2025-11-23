@@ -1,23 +1,33 @@
 // File: frontend/src/components/Layout.jsx
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Outlet, Link } from 'react-router-dom'; // Import Link
-import { FaBars, FaTimes } from 'react-icons/fa';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { Outlet, Link } from "react-router-dom"; // Import Link
+import { FaBars, FaTimes } from "react-icons/fa";
 
 // This is the generic placeholder icon
 const IconPlaceholder = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+  <svg
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+    ></path>
   </svg>
 );
-
 
 function Layout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);d
+    setIsMenuOpen(!isMenuOpen);
   };
 
   const closeMenu = () => {
@@ -27,20 +37,28 @@ function Layout() {
   return (
     // Main container is 'relative' to hold the background
     <div className="bg-secondary text-text min-h-screen flex flex-col font-sans overflow-x-hidden relative">
-
       {/* ========== ANIMATED BACKGROUND IMAGE ========== */}
       <motion.div
         initial={{ opacity: 0 }} // Start invisible
         animate={{
-          opacity: 1,             // Fade in
-          y: [0, -20, 0],       // Float up and down
-          scale: [1, 1.03, 1]   // Pulse scale up and down
+          opacity: 1, // Fade in
+          y: [0, -20, 0], // Float up and down
+          scale: [1, 1.03, 1], // Pulse scale up and down
         }}
         transition={{
           opacity: { duration: 1, delay: 0.5, ease: "easeOut" },
-          y: { duration: 12, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" },
-          scale: { duration: 12, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }
-          
+          y: {
+            duration: 12,
+            repeat: Infinity,
+            repeatType: "mirror",
+            ease: "easeInOut",
+          },
+          scale: {
+            duration: 12,
+            repeat: Infinity,
+            repeatType: "mirror",
+            ease: "easeInOut",
+          },
         }}
         className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden"
       >
@@ -50,10 +68,9 @@ function Layout() {
           className="w-2/3 md:w-1/2 h-auto opacity-5 object-contain"
         />
       </motion.div>
-      
+
       {/* All page content is wrapped in a z-10 container to sit on top */}
       <div className="relative z-10 flex flex-col min-h-screen">
-      
         {/* ========== NAVBAR ========== */}
         <motion.header
           initial={{ y: -50, opacity: 0 }}
@@ -74,17 +91,29 @@ function Layout() {
 
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-6">
-                <Link to="/" className="font-medium text-subtext hover:text-text transition-colors">Home</Link>
-                <Link to="/about" className="font-medium text-subtext hover:text-text transition-colors">About</Link>
-                <Link to="/pricing" className="font-medium text-subtext hover:text-text transition-colors">Pricing</Link>
-                <Link to="/features" className="font-medium text-subtext hover:text-text transition-colors">Features</Link>
-                                
-
                 <Link
-                  to="/login"
-                  className="bg-active text-white font-medium px-5 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity"
+                  to="/"
+                  className="font-medium text-subtext hover:text-text transition-colors"
                 >
-                  Login
+                  Home
+                </Link>
+                <Link
+                  to="/about"
+                  className="font-medium text-subtext hover:text-text transition-colors"
+                >
+                  About
+                </Link>
+                <Link
+                  to="/pricing"
+                  className="font-medium text-subtext hover:text-text transition-colors"
+                >
+                  Pricing
+                </Link>
+                <Link
+                  to="/features"
+                  className="font-medium text-subtext hover:text-text transition-colors"
+                >
+                  Features
                 </Link>
               </div>
 
@@ -94,7 +123,11 @@ function Layout() {
                 className="md:hidden text-text hover:text-active transition-colors p-2"
                 aria-label="Toggle menu"
               >
-                {isMenuOpen ? <FaTimes className="w-6 h-6" /> : <FaBars className="w-6 h-6" />}
+                {isMenuOpen ? (
+                  <FaTimes className="w-6 h-6" />
+                ) : (
+                  <FaBars className="w-6 h-6" />
+                )}
               </button>
             </div>
 
@@ -102,7 +135,7 @@ function Layout() {
             {isMenuOpen && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
+                animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
                 className="md:hidden mt-4 pb-4 border-t border-border pt-4"
@@ -129,13 +162,6 @@ function Layout() {
                   >
                     Features
                   </Link>
-                  <Link
-                    to="/login"
-                    onClick={closeMenu}
-                    className="bg-active text-white font-medium px-5 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity inline-block text-center"
-                  >
-                    Login
-                  </Link>
                 </div>
               </motion.div>
             )}
@@ -151,9 +177,12 @@ function Layout() {
           <div className="container mx-auto px-6 py-8 text-center text-subtext text-xs">
             <p className="font-semibold text-error mb-2 text-sm">DISCLAIMER</p>
             <p className="max-w-3xl mx-auto">
-              eVakeel is an AI-powered informational tool and does not provide certified legal advice...
+              eVakeel is an AI-powered informational tool and does not provide
+              certified legal advice...
             </p>
-            <p className="mt-6 text-sm">&copy; 2025 eVakeel Team. All rights reserved.</p>
+            <p className="mt-6 text-sm">
+              &copy; 2025 eVakeel Team. All rights reserved.
+            </p>
           </div>
         </footer>
       </div>
