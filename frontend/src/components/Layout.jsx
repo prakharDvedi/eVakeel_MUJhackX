@@ -17,7 +17,7 @@ function Layout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+    setIsMenuOpen(!isMenuOpen);d
   };
 
   const closeMenu = () => {
@@ -74,9 +74,12 @@ function Layout() {
 
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-6">
+                <Link to="/" className="font-medium text-subtext hover:text-text transition-colors">Home</Link>
                 <Link to="/about" className="font-medium text-subtext hover:text-text transition-colors">About</Link>
                 <Link to="/pricing" className="font-medium text-subtext hover:text-text transition-colors">Pricing</Link>
                 <Link to="/features" className="font-medium text-subtext hover:text-text transition-colors">Features</Link>
+                                
+
                 <Link
                   to="/login"
                   className="bg-active text-white font-medium px-5 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity"
