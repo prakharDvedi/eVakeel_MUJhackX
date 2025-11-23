@@ -2,10 +2,8 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const fs = require("fs");
 const path = require("path");
 const pdfParse = require("pdf-parse");
-const config = require("../config");
-
-// Use process.env directly since config.js might not be updated due to gitignore
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || config.gemini?.apiKey;
+// Config removed - using environment variables
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.0-flash";
 
 console.log("[aiProxy] Config loaded - API key exists:", !!GEMINI_API_KEY);
