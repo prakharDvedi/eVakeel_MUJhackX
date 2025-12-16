@@ -1,8 +1,11 @@
 # eVakeel - AI-Powered Legal Companion
+https://github.com/prakharDvedi/eVakeel_MUJhackX
 
 **eVakeel** is an intelligent legal advisory platform designed to make legal information accessible to every Indian citizen. Built with cutting-edge AI technology, it provides instant legal guidance, document analysis, and compliance tracking in a user-friendly interface.
 
 ![eVakeel](https://img.shields.io/badge/AI-Powered%20Legal%20Platform-blue) ![React](https://img.shields.io/badge/React-19.1.1-61DAFB) ![Fastify](https://img.shields.io/badge/Fastify-5.6.0-000000) ![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o--mini-412991)
+
+<img width="1919" height="981" alt="image" src="https://github.com/user-attachments/assets/15c06e99-39b8-44f8-aaa9-38fb7b0273ed" />
 
 ## 🌟 Features
 
