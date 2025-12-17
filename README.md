@@ -6,25 +6,27 @@
 
 ## 🌟 Features
 
-*   **AI Legal Advisor**: Interactive chat interface powered by GPT-4o-mini for instant legal guidance, context-aware responses based on Indian law, and support for PDF document context.
-*   **Document Analysis & Parser**: Upload and analyze legal documents (PDF, PNG, JPEG, WebP) with AI for text extraction, simplified summaries, and risk assessment.
-*   **Legal Health Score**: A 12-point legal compliance checklist for Indian citizens with interactive guidance and progress tracking.
-*   **Additional Features**: Real-time WebSocket chat, responsive mobile-first design, Markdown formatting support, and secure session management.
+- **AI Legal Advisor**: Interactive chat interface powered by GPT-4o-mini for instant legal guidance, context-aware responses based on Indian law, and support for PDF document context.
+- **Document Analysis & Parser**: Upload and analyze legal documents (PDF, PNG, JPEG, WebP) with AI for text extraction, simplified summaries, and risk assessment.
+- **Legal Health Score**: A 12-point legal compliance checklist for Indian citizens with interactive guidance and progress tracking.
+- **Additional Features**: Real-time WebSocket chat, responsive mobile-first design, Markdown formatting support, and secure session management.
 
 ## 🛠️ Technology Stack
 
 ### Frontend
-*   **React 19.1.1** - UI library
-*   **Vite 7.1.7** - Build tool and dev server
-*   **React Router DOM 7.9.5** - Routing
-*   **Framer Motion 12.23.24** - Animations
-*   **Tailwind CSS 4.1.16** - Styling
+
+- **React 19.1.1** - UI library
+- **Vite 7.1.7** - Build tool and dev server
+- **React Router DOM 7.9.5** - Routing
+- **Framer Motion 12.23.24** - Animations
+- **Tailwind CSS 4.1.16** - Styling
 
 ### Backend
-*   **Fastify 5.6.0** - Fast web framework
-*   **OpenAI SDK 4.73.1** - AI integration
-*   **WebSocket** - Real-time communication
-*   **PDF-Parse 1.1.1** - PDF text extraction
+
+- **Fastify 5.6.0** - Fast web framework
+- **OpenAI SDK 4.73.1** - AI integration
+- **WebSocket** - Real-time communication
+- **PDF-Parse 1.1.1** - PDF text extraction
 
 ## 📁 Project Structure
 
@@ -58,6 +60,7 @@ eVakeel_MUJhackX/
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - **Node.js** (v16 or higher)
 - **npm** (v8 or higher) or **yarn**
 - **OpenAI API Key**
@@ -116,16 +119,16 @@ This project is part of the MUJhackX hackathon. Please check the license file fo
 
 ## 👥 Authors
 
--   eVakeel Team - 026 ONE SHOT
--   MUJhackX 2024
+- eVakeel Team - 026 ONE SHOT
+- MUJhackX 2024
 
 ## 🔮 Future Enhancements
 
--   Multi-language support
--   User authentication and profile management
--   Document history and saved conversations
--   Legal case tracking
--   Integration with government portals
+- Multi-language support
+- User authentication and profile management
+- Document history and saved conversations
+- Legal case tracking
+- Integration with government portals
 
 ---
 
