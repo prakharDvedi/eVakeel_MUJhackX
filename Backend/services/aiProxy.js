@@ -14,9 +14,7 @@ const model = genAI ? genAI.getGenerativeModel({ model: GEMINI_MODEL }) : null;
 
 console.log("[aiProxy] Gemini client ready:", !!model);
 
-/**
- * Extract text from PDF file
- */
+//extract tect from pdf file
 async function extractTextFromPDF(pdfPath) {
   try {
     if (!fs.existsSync(pdfPath)) {
@@ -32,9 +30,6 @@ async function extractTextFromPDF(pdfPath) {
   }
 }
 
-/**
- * Chat with Gemini (with optional PDF/image context)
- */
 async function generate(payload) {
   if (!model) {
     return {
@@ -52,7 +47,7 @@ async function generate(payload) {
     if (pdf_path && fs.existsSync(pdf_path)) {
       console.log("[aiProxy.generate] Extracting text from PDF:", pdf_path);
       extractedText = await extractTextFromPDF(pdf_path);
-      if (extractedText) {
+      if (extractedText) {  
         console.log(
           "[aiProxy.generate] Extracted",
           extractedText.length,
@@ -61,18 +56,11 @@ async function generate(payload) {
       }
     }
 
-    // System prompt for legal advisor role
     const systemPrompt = `You are a legal advisor in india and giving answer as per indian advocate. Provide clear, actionable legal steps without markdown formatting (no bold text, no asterisks). Use plain text format. Do not console or reassure the user - be professional, direct, and factual. Focus on providing proper legal actionable steps and explain the risks involved in the case. Keep answers concise when possible, but provide detailed explanation when necessary.for sure Always end your response with a line that rates the risk level on a scale of 1-10, formatted as: "Risk Level: [number]/10".`;
 
-    // Construct history for Gemini
-    // Gemini expects history as { role: 'user' | 'model', parts: [{ text: '...' }] }
     const history = [];
     let lastUserMessage = "";
 
-    // Handle system prompt by prepending to the first user message or using systemInstruction if supported
-    // For simplicity and compatibility, we'll prepend to the context or first message
-
-    // Process previous messages
     for (let i = 0; i < (messages || []).length - 1; i++) {
       const msg = messages[i];
       const role = msg.role === "assistant" ? "model" : "user";
@@ -82,12 +70,9 @@ async function generate(payload) {
       });
     }
 
-    // Get the last message (current user query)
     if (messages && messages.length > 0) {
       lastUserMessage = messages[messages.length - 1].content || "";
     }
-
-    // Add context and system prompt to the last message
     let finalPrompt = `${systemPrompt}\n\n`;
     if (extractedText) {
       finalPrompt += `Here is additional context from a document:\n\n${extractedText.substring(
@@ -137,9 +122,6 @@ async function generate(payload) {
   }
 }
 
-/**
- * Analyze document (PDF or image)
- */
 async function callAI(path, payload, timeout = 30000) {
   if (!model) {
     return { error: "Gemini API key not configured" };
@@ -206,16 +188,7 @@ Use plain text format only - no markdown formatting, no bold text, no asterisks.
   }
 }
 
-/**
- * Stream tokens from AI service to the client websocket.
- */
 async function streamToClient(aiStreamPath, initPayload, ws, opts = {}) {
-  // Gemini streaming implementation
-  // For now, we'll use the non-streaming generate function and simulate streaming
-  // or implement true streaming if needed.
-  // Given the current architecture, let's stick to the existing simulation for simplicity
-  // unless true streaming is requested.
-
   const result = await generate(initPayload);
   if (result.answer) {
     const chunks = result.answer.match(/.{1,50}/g) || [result.answer];
