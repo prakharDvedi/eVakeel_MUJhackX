@@ -1,10 +1,8 @@
-// File: frontend/src/pages/LegalScorePage.jsx
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaExternalLinkAlt, FaChevronDown, FaChevronUp } from "react-icons/fa";
 
-// --- Configuration for Legal Score Tasks ---
+// legal score tasks configuration
 const legalTasks = [
   {
     id: "aadhaar",
@@ -194,24 +192,23 @@ const legalTasks = [
   },
 ];
 
-// Calculate the maximum possible score
+// calculate the maximum possible score
 const totalMaxPoints = legalTasks.reduce((sum, task) => sum + task.points, 0);
 
-// --- Main Page Component ---
 function LegalScorePage() {
-  // Create an initial state for checkboxes, all set to 'false'
+  // initial state for checkboxes, all set to 'false'
   const [checkedState, setCheckedState] = useState(
     new Array(legalTasks.length).fill(false)
   );
 
-  // State for expanded dropdowns
+  // state for expanded dropdowns
   const [expandedTasks, setExpandedTasks] = useState(
     new Array(legalTasks.length).fill(false)
   );
 
   const [score, setScore] = useState(0);
 
-  // Update the score whenever the 'checkedState' changes
+  // update the score whenever the 'checkedState' changes
   useEffect(() => {
     const newScore = checkedState.reduce((currentScore, isChecked, index) => {
       if (isChecked) {
@@ -222,7 +219,7 @@ function LegalScorePage() {
     setScore(newScore);
   }, [checkedState]);
 
-  // Handler for when a checkbox is clicked
+  // handler for when a checkbox is clicked
   const handleCheckboxChange = (position) => {
     const updatedCheckedState = checkedState.map((item, index) =>
       index === position ? !item : item
@@ -230,7 +227,7 @@ function LegalScorePage() {
     setCheckedState(updatedCheckedState);
   };
 
-  // Handler for expanding/collapsing dropdowns
+  // handler for expanding/collapsing dropdowns
   const handleToggleExpand = (position) => {
     const updatedExpandedState = expandedTasks.map((item, index) =>
       index === position ? !item : item
@@ -242,7 +239,6 @@ function LegalScorePage() {
 
   return (
     <div className="grow flex flex-col items-center justify-start text-text p-4 sm:p-6 pt-8 sm:pt-12">
-      {/* --- Page Title --- */}
       <motion.h1
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -261,7 +257,6 @@ function LegalScorePage() {
         links, then check the box.
       </motion.p>
 
-      {/* --- Score Display --- */}
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -277,7 +272,7 @@ function LegalScorePage() {
           </span>
         </div>
 
-        {/* Progress Bar */}
+        {/* progress bar */}
         <div className="w-full bg-secondary rounded-full h-3">
           <motion.div
             className="bg-active h-3 rounded-full"
@@ -288,7 +283,6 @@ function LegalScorePage() {
         </div>
       </motion.div>
 
-      {/* --- Checklist --- */}
       <motion.div
         className="w-full max-w-lg space-y-4"
         initial={{ y: 20, opacity: 0 }}
@@ -300,9 +294,9 @@ function LegalScorePage() {
             key={task.id}
             className="bg-surface border border-border rounded-xl shadow-soft overflow-hidden"
           >
-            {/* Main Task Header */}
+            {/* main task header */}
             <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0">
-              {/* Checkbox and Task Info */}
+              {/* checkbox and task info */}
               <div className="flex items-start flex-grow">
                 <input
                   type="checkbox"
@@ -314,7 +308,7 @@ function LegalScorePage() {
                   className="h-5 w-5 sm:h-6 sm:w-6 rounded text-active bg-secondary border-border focus:ring-active mt-1"
                 />
 
-                {/* Task Info */}
+                {/* task info */}
                 <div className="ml-3 sm:ml-4 flex-grow">
                   <label
                     htmlFor={task.id}
@@ -328,13 +322,13 @@ function LegalScorePage() {
                 </div>
               </div>
 
-              {/* Points and Controls */}
+              {/* points and controls */}
               <div className="flex items-center justify-between sm:justify-end space-x-2 sm:space-x-3 ml-8 sm:ml-0">
                 <span className="text-xs sm:text-sm font-medium text-active bg-active/10 px-2 py-1 rounded">
                   +{task.points} pts
                 </span>
 
-                {/* Expand/Collapse Button */}
+                {/* expand/collapse button */}
                 <button
                   onClick={() => handleToggleExpand(index)}
                   className="text-subtext hover:text-active transition-colors p-1"
@@ -347,7 +341,7 @@ function LegalScorePage() {
                   )}
                 </button>
 
-                {/* External Link */}
+                {/* external link */}
                 <a
                   href={task.link}
                   target="_blank"
@@ -360,7 +354,7 @@ function LegalScorePage() {
               </div>
             </div>
 
-            {/* Expandable Steps Section */}
+            {/* expandable steps section */}
             {expandedTasks[index] && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
