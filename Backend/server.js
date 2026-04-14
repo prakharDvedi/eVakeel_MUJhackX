@@ -24,13 +24,13 @@ fastify.get("/health", async () => ({ status: "ok", ts: Date.now() }));
 
 const start = async () => {
   try {
-    if (!process.env.GEMINI_API_KEY) {
+    if (!process.env.GROQ_API_KEY) {
       fastify.log.warn(
-        "Warning: GEMINI_API_KEY not found in environment variables"
+        "Warning: GROQ_API_KEY not found in environment variables"
       );
-      fastify.log.warn("Make sure GEMINI_API_KEY is set in Backend/.env file");
+      fastify.log.warn("Make sure GROQ_API_KEY is set in Backend/.env file");
     } else {
-      fastify.log.info("GEMINI_API_KEY loaded successfully");
+      fastify.log.info("GROQ_API_KEY loaded successfully");
     }
 
     const port = process.env.PORT || 5050;
